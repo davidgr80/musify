@@ -2,6 +2,8 @@
  * Created by drodriguez on 13/10/17.
  */
 'use strict'
+var fs = require('fs');
+var path = require('path');
 var User = require('../models/user');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
@@ -101,7 +103,19 @@ function uploadImage(req,res){
         var file_path = req.files.image.path;
         var file_split = file_path.split('/');
         var file_name = file_split[2];
-        console.log(file_split);
+        var ext_split = file_name.split('.');
+        var file_ext = ext_split[1];
+        if(file_ext == 'png' || file_ext == 'jpg'){
+            User.findByIdAndUpdate(userId, {image: file_name}, (err, userUpdated) => {
+                if(!userUpdated){
+                    res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+                } else {
+                    res.status(200).send({user: userUpdated});
+                }
+            });
+        } else {
+            res.status(200).send({message: 'Extension del archivo no valida'});
+        }
     } else {
         res.status(500).send({message: 'No has subido ninguna imagen.'});
     }
