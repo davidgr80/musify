@@ -121,10 +121,23 @@ function uploadImage(req,res){
     }
 }
 
+function getImageFile(req,res){
+    var imageFile = req.params.imageFile;
+    var path_file = './uploads/users/'+imageFile;
+    fs.exists(path_file, (exists) => {
+        if(exists){
+            res.sendFile(path.resolve(path_file));
+        } else {
+            res.status(404).send({message: 'No existe la imagen'});
+        }
+    });
+}
+
 module.exports = {
     pruebas,
     saveUser,
     loginUser,
     updateUser,
-    uploadImage
+    uploadImage,
+    getImageFile
 };
